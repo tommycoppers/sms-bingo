@@ -41,7 +41,6 @@ export default {
       showWinningModal.value = false;
     }
     function celetebrate(sayings) {
-      console.log(`YOU WONNNNN`, sayings);
       winningSayings.value = sayings;
       showWinningModal.value = true;
     }

@@ -24,7 +24,6 @@ export default {
         .filter((x) => !!x);
     }
     function submitForm() {
-      console.log(`submitForm`);
       context.emit("submit", sayings.value);
     }
     return {
