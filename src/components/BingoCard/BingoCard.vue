@@ -22,22 +22,11 @@
 </template>
 
 <script>
-const minimumSayingsCount = 24;
 const FREE_PIECE = "FREE";
-const winningCombos = [
-  [0, 1, 2, 3, 4],
-  [5, 6, 7, 8, 9],
-  [10, 11, 12, 13, 14],
-  [15, 16, 17, 18, 19],
-  [20, 21, 22, 23, 24],
-  [0, 5, 10, 15, 20],
-  [1, 6, 11, 16, 21],
-  [2, 7, 12, 17, 22],
-  [3, 8, 13, 18, 23],
-  [4, 9, 14, 19, 24],
-  [0, 6, 12, 18, 24],
-  [4, 8, 12, 16, 20],
-];
+const rowCount = 5;
+const totalSpaces = rowCount * rowCount;
+const winningCombos = getWinningCombos(rowCount);
+const minimumSayingsCount = totalSpaces - 1; // Because the FREE space will be added
 
 import { ref, watch, computed } from "vue";
 import { shuffle } from "../../utils/array-helpers";
@@ -116,6 +105,37 @@ function evaluateGameStatus(boardSayings) {
 
   return winningSequence;
 }
+
+function getWinningCombos(rowCount = 5) {
+  const items = [...Array(rowCount * rowCount)].map((_, i) => i);
+  const rows = items.reduce((acc, item, index) => {
+    if (index % rowCount === 0) {
+      acc.push([]);
+    }
+    acc[acc.length - 1].push(item);
+    return acc;
+  }, []);
+
+  const columns = rows.reduce(
+    (cols, row) => {
+      row.forEach((item, index) => cols[index].push(item));
+      return cols;
+    },
+    [...Array(rows.length)].map(() => [])
+  );
+
+  const diagonals = rows.reduce(
+    (diag, row, index) => {
+      diag[0].push(row[index]);
+      diag[1].push(row[row.length - index - 1]);
+      return diag;
+    },
+    [...Array(2)].map(() => [])
+  );
+
+  return [...rows, ...columns, ...diagonals];
+}
+
 </script>
 
 <style scoped>
