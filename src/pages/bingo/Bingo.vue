@@ -1,8 +1,19 @@
 <template>
   <div>
     <h1>Shit Mike Says BINGO!</h1>
-    <!-- <p>{{message}}</p> -->
-    <bingo-board :sayings="sayings"></bingo-board>
+    <bingo-board :sayings="sayings" @won="celetebrate"></bingo-board>
+    <base-modal
+      @close="hideWinningModal"
+      title="BINGO!"
+      type="success"
+      :open="showWinningModal"
+    >
+      <h3>Congratulations!!! YOU WON!</h3>
+      <p>Winning Combo:</p>
+      <ul>
+        <li v-for="saying in winningSayings" :key="saying">{{ saying }}</li>
+      </ul>
+    </base-modal>
   </div>
 </template>
 
@@ -10,7 +21,8 @@
 import { ref } from "vue";
 import { useStore } from "vuex";
 
-import BingoBoard from "../../components/BingoBoard.vue";
+import BingoBoard from "../../components/BingoBoard/BingoBoard.vue";
+
 export default {
   components: { BingoBoard },
   setup() {
@@ -18,13 +30,30 @@ export default {
     const sayings = ref([]);
 
     loadSayings(store).then(() => {
-      sayings.value = Object.values(store.getters["mikeisms/sayings"]);
+      sayings.value = Object.values(store.getters["mikeisms/sayings"]).map(
+        (saying) => saying.saying
+      );
     });
 
+    const winningSayings = ref([]);
+    const showWinningModal = ref(false);
+    function hideWinningModal() {
+      showWinningModal.value = false;
+    }
+    function celetebrate(sayings) {
+      console.log(`YOU WONNNNN`, sayings);
+      winningSayings.value = sayings;
+      showWinningModal.value = true;
+    }
+
     return {
-      sayings
+      sayings,
+      winningSayings,
+      showWinningModal,
+      hideWinningModal,
+      celetebrate,
     };
-  }
+  },
 };
 
 async function loadSayings(store) {

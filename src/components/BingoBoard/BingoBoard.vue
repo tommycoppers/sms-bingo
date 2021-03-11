@@ -1,26 +1,27 @@
 <template>
   <div>
-    <!-- <code>{{boardSayings}}</code> -->
-    <h2>YOU WON: {{!!isWon}}</h2>
-
-    <div v-if="boardSayings.length >= 25" class="bingo-board">
+    <div v-if="showBoard" class="bingo-board">
       <div class="bingo-board-inner">
         <div
           class="bingo-board__square"
           v-for="saying in boardSayings"
-          :class="{'is-selected': saying.isSelected}"
+          :class="{ 'is-selected': saying.isSelected }"
           :key="saying"
           @click="toggleSelected(saying)"
         >
-          <div class="bingo-board__square-content">{{saying.saying}}</div>
+          <div class="bingo-board__square-content">{{ saying.saying }}</div>
         </div>
       </div>
+    </div>
+    <div v-else>
+      <h2>Not Enough Sayings</h2>
+      <p><router-link to="/mikeisms">Go Add Some!</router-link></p>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, watch } from "vue";
+const minimumSayingsCount = 24;
 const FREE_PIECE = "FREE";
 const winningCombos = [
   [0, 1, 2, 3, 4],
@@ -34,57 +35,73 @@ const winningCombos = [
   [3, 8, 13, 18, 23],
   [4, 9, 14, 19, 24],
   [0, 6, 12, 18, 24],
-  [4, 8, 12, 16, 20]
+  [4, 8, 12, 16, 20],
 ];
 
+import { ref, watch, computed } from "vue";
+import { shuffle } from "../../utils/array-helpers";
+
 export default {
+  emits: ["won"],
   props: {
     sayings: {
-      default: []
-    }
+      default: [],
+    },
   },
-  setup(props) {
-    const boardSayings = ref(getSayings(props));
-    const isWon = ref(false);
+  setup(props, context) {
+    const boardSayings = ref(generateBoardSayings(props));
 
-    watch(props, (newVals, oldVals) => {
-        console.log('WATCH', newVals, oldVals)
-      newVals.sayings && (boardSayings.value = getSayings(props));
+    watch(props, (newVals) => {
+      newVals.sayings && (boardSayings.value = generateBoardSayings(props));
+    });
+
+    const showBoard = computed(() => {
+      return boardSayings.value.length > minimumSayingsCount;
     });
 
     function toggleSelected(saying) {
       if (saying.saying === FREE_PIECE) {
         return;
       }
+
       saying.isSelected = !saying.isSelected;
-      evaluateGameStatus(boardSayings, isWon);
+
+      const winningSequence = evaluateGameStatus(boardSayings);
+      if (winningSequence) {
+        const winningSayings = winningSequence.map(
+          (index) => boardSayings.value[index].saying
+        );
+        context.emit("won", winningSayings);
+      }
     }
 
     return {
+      showBoard,
       boardSayings,
       toggleSelected,
-      isWon
     };
-  }
+  },
 };
 
-function getSayings(props) {
+function generateBoardSayings(props) {
   const sayings = props.sayings || [];
-  if (!sayings.length) {
+  if (sayings.length < minimumSayingsCount) {
     return sayings;
   }
+
   const shuffledSayings = shuffle(sayings);
-  shuffledSayings.length = 24;
+  shuffledSayings.length = minimumSayingsCount;
   shuffledSayings.splice(12, 0, FREE_PIECE);
-  const sayingsConfig = shuffledSayings.map(saying => ({
+
+  const sayingsConfig = shuffledSayings.map((saying) => ({
     saying,
-    isSelected: saying === FREE_PIECE
+    isSelected: saying === FREE_PIECE,
   }));
 
   return sayingsConfig;
 }
 
-function evaluateGameStatus(boardSayings, isWon) {
+function evaluateGameStatus(boardSayings) {
   const currentlySelected = boardSayings.value.reduce((acc, saying, index) => {
     if (saying.isSelected) {
       acc.push(index);
@@ -92,43 +109,25 @@ function evaluateGameStatus(boardSayings, isWon) {
     return acc;
   }, []);
 
-  const winningSequence = winningCombos.find(combo => {
-    return combo.every(i => currentlySelected.includes(i));
+  const winningSequence = winningCombos.find((combo) => {
+    return combo.every((i) => currentlySelected.includes(i));
   });
 
-  isWon.value = !!winningSequence;
-}
-
-function shuffle(arr) {
-  arr = arr.slice(); // Copy the array
-  let len = arr.length;
-  let i;
-
-  // While there remain elements to shuffle…
-  while (len) {
-    // Pick a remaining element…
-    // And swap it with the current element.
-    i = Math.floor(Math.random() * len--);
-    [arr[len], arr[i]] = [arr[i], arr[len]];
-  }
-
-  return arr;
+  return winningSequence;
 }
 </script>
 
 <style scoped>
-*,
-*:before,
-*:after {
-  box-sizing: border-box;
-}
+
 .bingo-board {
-  width: 60vw;
+  width: 80vw;
+  max-width: 60vh;
   position: relative;
   border: 5px solid transparent;
   background: var(--primary-color);
   clip: border;
   margin: 0 auto;
+  box-shadow: 0 5px 2px -2px rgba(0, 0, 0, 0.3);
 }
 
 .bingo-board:after {
@@ -139,10 +138,8 @@ function shuffle(arr) {
 
 .bingo-board-inner {
   display: grid;
-  /* grid-template-rows: repeat(5, 1fr); */
   grid-template-columns: repeat(5, 1fr);
   grid-gap: 5px;
-
   position: absolute;
   top: 0;
   right: 0;
@@ -152,18 +149,14 @@ function shuffle(arr) {
 
 .bingo-board__square {
   background: #fff;
-
-  /* padding: 1em; */
   padding-top: 100%;
   position: relative;
 }
+
 .bingo-board__square:hover {
   cursor: pointer;
 }
 
-.bingo-board__square.is-selected {
-  /* background: #ccc; */
-}
 .bingo-board__square:before {
   content: "";
   top: -100vh;
@@ -172,8 +165,9 @@ function shuffle(arr) {
   position: absolute;
   transform: scale(1.1) rotateY(70deg);
   transition: transform 0.15s ease-out;
-  opacity: .6;
+  opacity: 0.6;
 }
+
 .bingo-board__square.is-selected:before {
   --chip-color: var(--primary-color);
   content: "";
