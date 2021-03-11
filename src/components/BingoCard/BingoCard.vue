@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <section class="bingo-card">
+    <header>BINGO</header>
     <div v-if="showBoard" class="bingo-board">
       <div class="bingo-board-inner">
         <div
@@ -17,7 +18,7 @@
       <h2>Not Enough Sayings</h2>
       <p><router-link to="/mikeisms">Go Add Some!</router-link></p>
     </div>
-  </div>
+  </section>
 </template>
 
 <script>
@@ -118,16 +119,35 @@ function evaluateGameStatus(boardSayings) {
 </script>
 
 <style scoped>
-
-.bingo-board {
+.bingo-card {
+  --border-weight: 3px;
   width: 80vw;
   max-width: 60vh;
-  position: relative;
-  border: 5px solid transparent;
-  background: var(--primary-color);
-  clip: border;
   margin: 0 auto;
   box-shadow: 0 5px 2px -2px rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid #005d5d;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.bingo-card header {
+  background: var(--primary-color);
+  color: #fff;
+  text-align: center;
+  padding: 1rem;
+  margin: -1rem -1rem 1rem;
+  font-size: 2rem;
+  font-weight: 800;
+  border-bottom: 1px solid #005d5d;
+}
+
+.bingo-board {
+  position: relative;
+  border: var(--border-weight) solid transparent;
+  background: #260347;
+  clip: border;
 }
 
 .bingo-board:after {
@@ -139,7 +159,7 @@ function evaluateGameStatus(boardSayings) {
 .bingo-board-inner {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  grid-gap: 5px;
+  grid-gap: var(--border-weight);
   position: absolute;
   top: 0;
   right: 0;
@@ -169,7 +189,7 @@ function evaluateGameStatus(boardSayings) {
 }
 
 .bingo-board__square.is-selected:before {
-  --chip-color: var(--primary-color);
+  --chip-color: var(--secondary-color);
   content: "";
   background: var(--chip-color);
   top: 0;
@@ -191,7 +211,7 @@ function evaluateGameStatus(boardSayings) {
   align-items: center;
   justify-content: center;
   padding: 1em;
-  font-size: 1.2vw;
+  font-size: 70%;
   text-align: center;
 }
 </style>

@@ -1,15 +1,12 @@
 <template>
   <div>
-    <h1>Shit Mike Says BINGO!</h1>
-    <bingo-board :sayings="sayings" @won="celetebrate"></bingo-board>
+    <bingo-card :sayings="sayings" @won="celetebrate"></bingo-card>
     <base-modal
       @close="hideWinningModal"
       title="BINGO!"
-      type="success"
       :open="showWinningModal"
     >
-      <h3>Congratulations!!! YOU WON!</h3>
-      <p>Winning Combo:</p>
+      <h2>Winning Combo:</h2>
       <ul>
         <li v-for="saying in winningSayings" :key="saying">{{ saying }}</li>
       </ul>
@@ -21,10 +18,10 @@
 import { ref } from "vue";
 import { useStore } from "vuex";
 
-import BingoBoard from "../../components/BingoBoard/BingoBoard.vue";
+import BingoCard from "../../components/BingoCard/BingoCard.vue";
 
 export default {
-  components: { BingoBoard },
+  components: { BingoCard },
   setup() {
     const store = useStore();
     const sayings = ref([]);

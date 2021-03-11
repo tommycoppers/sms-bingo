@@ -17,8 +17,9 @@ export default {
 
 <style>
 :root {
-  --main-spacing: 20px;
-  --primary-color: rgb(72, 29, 114);
+  --main-spacing: 1rem;
+  --primary-color: #481d72;
+  --secondary-color: #16a7a7;
 }
 
 *,
@@ -38,7 +39,11 @@ body {
   color: #2c3e50;
 }
 main {
-  padding: var(--main-spacing);
+  padding: calc(var(--main-spacing) * 3) calc(var(--main-spacing) * 2);
+}
+
+main h1 {
+  margin-top: 0;
 }
 
 button {
@@ -53,7 +58,7 @@ button {
   border-radius: 0.5rem;
   font-size: 1rem;
   height: 2.5em;
-  transition: background-color .5s;
+  transition: background-color 0.5s;
 }
 
 button:hover {
