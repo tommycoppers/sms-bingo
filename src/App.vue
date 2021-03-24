@@ -3,12 +3,14 @@
     <the-header></the-header>
     <main>
       <router-view></router-view>
+      <div class='logo'><img src="./assets/logo.svg" alt=""></div>
     </main>
   </div>
 </template>
 
 <script>
 import TheHeader from "./components/TheHeader.vue";
+
 export default {
   name: "App",
   components: { TheHeader },
@@ -83,5 +85,11 @@ button.invert:hover {
 button[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.logo img{
+  display: block;
+  margin: 48px auto auto;
+  width: 168px;
 }
 </style>

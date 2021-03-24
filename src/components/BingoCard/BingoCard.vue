@@ -1,6 +1,6 @@
 <template>
   <section class="bingo-card">
-    <header>BINGO</header>
+    <!-- <header>BINGO</header> -->
     <div v-if="showBoard" class="bingo-board">
       <div class="bingo-board-inner">
         <div
@@ -140,14 +140,14 @@ function getWinningCombos(rowCount = 5) {
 
 <style scoped>
 .bingo-card {
-  --border-weight: 3px;
+  --border-weight: 1px;
   width: 80vw;
   max-width: 60vh;
   margin: 0 auto;
-  box-shadow: 0 5px 2px -2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.04), 0px 2px 4px 0px rgba(0,0,0,0.04), 0px 4px 8px 0px rgba(0,0,0,0.04), 0px 8px 16px 0px rgba(0,0,0,0.04), 0px 16px 32px 0px rgba(0,0,0,0.04);
   padding: 1rem;
   background: #fff;
-  border: 1px solid #005d5d;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 0.5rem;
   overflow: hidden;
 }
@@ -166,7 +166,7 @@ function getWinningCombos(rowCount = 5) {
 .bingo-board {
   position: relative;
   border: var(--border-weight) solid transparent;
-  background: #260347;
+  background: rgba(0,0,0,0.2);
   clip: border;
 }
 
@@ -197,28 +197,38 @@ function getWinningCombos(rowCount = 5) {
   cursor: pointer;
 }
 
+.bingo-board__square:not(.is-selected):hover {
+  background: rgba(255,255,255,0.9);
+}
+
 .bingo-board__square:before {
   content: "";
   top: -100vh;
-  border-radius: 100%;
+  border-radius: 999px;
   margin: 0.25em;
   position: absolute;
-  transform: scale(1.1) rotateY(70deg);
-  transition: transform 0.15s ease-out;
-  opacity: 0.6;
+  transform: scale(0.1);
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 1;
 }
 
 .bingo-board__square.is-selected:before {
-  --chip-color: var(--secondary-color);
+  --chip-color: var(--primary-color);
   content: "";
-  background: var(--chip-color);
+  background-color: var(--chip-color);
+  background-image: url("../../assets/mike.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   top: 0;
   right: 0;
   left: 0;
   bottom: 0;
-  box-shadow: inset 1px 1px var(--chip-color),
-    inset 1px 1px 1px 3px rgba(255, 255, 255, 0.3);
-  transform: scale(1) rotateY(0);
+  transform: scale(0.94);
+}
+
+.bingo-board__square.is-selected div{
+  color: white;
 }
 
 .bingo-board__square-content {
@@ -231,7 +241,9 @@ function getWinningCombos(rowCount = 5) {
   align-items: center;
   justify-content: center;
   padding: 1em;
-  font-size: 70%;
+  font-size: 90%;
+  font-weight: 600;
   text-align: center;
+  user-select: none;
 }
 </style>
