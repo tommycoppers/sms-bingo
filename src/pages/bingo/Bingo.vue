@@ -20,11 +20,14 @@ import { useStore } from "vuex";
 
 import BingoCard from "../../components/BingoCard/BingoCard.vue";
 
+
 export default {
   components: { BingoCard },
   setup() {
     const store = useStore();
     const sayings = ref([]);
+
+    //console.log(a,b);
 
     loadSayings(store).then(() => {
       sayings.value = Object.values(store.getters["mikeisms/sayings"]).map(
